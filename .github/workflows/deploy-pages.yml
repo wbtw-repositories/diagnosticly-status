@@ -1,31 +1,36 @@
 name: Deploy to GitHub Pages
 on:
   push:
-    branches: [gh-pages]
+    branches: [main]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: [self-hosted, gdt-ai]
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - uses: actions/deploy-pages@v4
-        id: deployment
+
+      - name: Deploy to gh-pages branch
+        run: |
+          git config user.name "gdt-admin"
+          git config user.email "admin@diagnostic.ly"
+
+          # Copy site content to temp dir
+          mkdir -p /tmp/pages-deploy
+          cp index.html /tmp/pages-deploy/
+          echo "status.diagnostic.ly" > /tmp/pages-deploy/CNAME
+          touch /tmp/pages-deploy/.nojekyll
+
+          # Force-push to gh-pages
+          git fetch origin gh-pages || true
+          git worktree add /tmp/gh-pages-wt gh-pages 2>/dev/null || \
+            git worktree add /tmp/gh-pages-wt -b gh-pages origin/gh-pages
+
+          cp /tmp/pages-deploy/* /tmp/gh-pages-wt/
+          cd /tmp/gh-pages-wt
+          git add -A
+          git diff --staged --quiet || git commit -m "deploy: update status dashboard"
+          git push origin gh-pages
+
+          # Cleanup
+          git -C /tmp/gh-pages-wt worktree remove /tmp/gh-pages-wt --force 2>/dev/null || true
