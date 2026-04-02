@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Project Status — laravel.diagnostic.ly — April 2026</title>
+<style>
+:root {
+  --text: #1E293B;
+  --text-muted: #64748B;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --border: #E2E8F0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --blue: #3B82F6;
+  --green: #16A34A;
+  --amber: #D97706;
+  --red: #DC2626;
+  --purple: #7C3AED;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+/* Header */
+header { background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%); color: white; padding: 48px 0 60px; text-align: center; }
+header .badge { display: inline-block; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4); padding: 4px 16px; border-radius: 100px; font-size: 0.75rem; color: #93C5FD; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; }
+header p { color: #94A3B8; font-size: 1rem; margin-bottom: 4px; }
+.header-sub { color: #64748B; font-size: 0.85rem; }
+
+/* Container */
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+/* KPI Strip */
+.kpi-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin: -28px auto 0; position: relative; z-index: 10; max-width: 1400px; padding: 0 24px; }
+.kpi { background: var(--card); border-radius: 12px; padding: 20px 16px; text-align: center; box-shadow: var(--shadow-lg); border-top: 3px solid var(--blue); }
+.kpi.green { border-top-color: var(--green); }
+.kpi.amber { border-top-color: var(--amber); }
+.kpi.red { border-top-color: var(--red); }
+.kpi.purple { border-top-color: var(--purple); }
+.kpi .number { font-size: 2rem; font-weight: 800; color: #1E40AF; }
+.kpi.green .number { color: var(--green); }
+.kpi.amber .number { color: var(--amber); }
+.kpi.red .number { color: var(--red); }
+.kpi.purple .number { color: var(--purple); }
+.kpi .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+
+/* Sections */
+section { padding: 48px 0; }
+section + section { border-top: 1px solid var(--border); }
+.section-header { margin-bottom: 28px; }
+.section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.section-sub { color: var(--text-muted); font-size: 0.9rem; }
+
+/* Health Scores */
+.health-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.health-card { background: var(--card); border-radius: 12px; padding: 22px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.health-card h4 { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; }
+.health-score { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.score-num { font-size: 2.2rem; font-weight: 800; min-width: 60px; }
+.score-bar-wrap { flex: 1; background: #F1F5F9; border-radius: 8px; height: 10px; overflow: hidden; }
+.score-bar { height: 100%; border-radius: 8px; transition: width 1s ease; }
+.score-note { font-size: 0.8rem; color: var(--text-muted); }
+.score-high .score-num { color: var(--green); }
+.score-high .score-bar { background: var(--green); }
+.score-mid .score-num { color: var(--amber); }
+.score-mid .score-bar { background: var(--amber); }
+.score-low .score-num { color: var(--red); }
+.score-low .score-bar { background: var(--red); }
+
+/* Epic Tables */
+.epic-group { margin-bottom: 40px; }
+.group-label { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.group-label h3 { font-size: 1.05rem; font-weight: 700; }
+.group-badge { padding: 3px 12px; border-radius: 100px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.gb-complete { background: #DCFCE7; color: #166534; }
+.gb-active { background: #DBEAFE; color: #1E40AF; }
+.gb-partial { background: #FEF3C7; color: #92400E; }
+.gb-backlog { background: #F1F5F9; color: #475569; }
+.gb-new { background: #F3E8FF; color: #6B21A8; }
+
+table.epic-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); background: var(--card); }
+table.epic-table thead th { padding: 11px 14px; text-align: left; font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); background: #F8FAFC; border-bottom: 2px solid var(--border); }
+table.epic-table thead th.center { text-align: center; }
+table.epic-table tbody td { padding: 12px 14px; border-bottom: 1px solid #F1F5F9; font-size: 0.875rem; vertical-align: top; }
+table.epic-table tbody tr:last-child td { border-bottom: none; }
+table.epic-table tbody tr:hover { background: #FAFBFD; }
+.issue-num { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.issue-title { font-weight: 600; color: var(--text); }
+.issue-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+/* Progress bar in table */
+.pct-cell { text-align: center; white-space: nowrap; }
+.pct-wrap { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.pct-num { font-weight: 700; font-size: 0.9rem; min-width: 38px; }
+.pct-bar-bg { width: 80px; height: 8px; background: #F1F5F9; border-radius: 4px; overflow: hidden; display: inline-block; }
+.pct-bar-fill { height: 100%; border-radius: 4px; }
+.pct-100 { color: var(--green); } .pct-100 .pct-bar-fill { background: var(--green); }
+.pct-high { color: #0284C7; } .pct-high .pct-bar-fill { background: #0284C7; }
+.pct-mid { color: var(--amber); } .pct-mid .pct-bar-fill { background: var(--amber); }
+.pct-low { color: #EA580C; } .pct-low .pct-bar-fill { background: #EA580C; }
+.pct-zero { color: var(--red); } .pct-zero .pct-bar-fill { background: #FCA5A5; }
+
+/* State badges */
+.state { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+.state-closed { background: #DCFCE7; color: #166534; }
+.state-open { background: #DBEAFE; color: #1E40AF; }
+.state-blocked { background: #FEE2E2; color: #991B1B; }
+
+/* Outstanding items */
+.outstanding { font-size: 0.8rem; color: var(--text-muted); }
+.outstanding .tag { display: inline-block; background: #FEF3C7; color: #92400E; padding: 1px 7px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-right: 3px; margin-bottom: 2px; }
+.outstanding .tag.red { background: #FEE2E2; color: #991B1B; }
+.outstanding .tag.blue { background: #DBEAFE; color: #1E40AF; }
+.outstanding .tag.green { background: #DCFCE7; color: #166534; }
+
+/* Blockers */
+.blockers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.blocker-card { background: var(--card); border-radius: 10px; padding: 18px; border: 1px solid var(--border); border-left: 4px solid var(--red); box-shadow: var(--shadow); }
+.blocker-card.amber { border-left-color: var(--amber); }
+.blocker-card.blue { border-left-color: var(--blue); }
+.blocker-num { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+.blocker-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+.blocker-detail { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Velocity */
+.velocity-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); background: var(--card); }
+.velocity-table thead th { padding: 10px 14px; text-align: right; font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); background: #F8FAFC; border-bottom: 2px solid var(--border); }
+.velocity-table thead th:first-child { text-align: left; }
+.velocity-table tbody td { padding: 11px 14px; border-bottom: 1px solid #F1F5F9; font-size: 0.88rem; text-align: right; }
+.velocity-table tbody td:first-child { text-align: left; font-weight: 600; }
+.velocity-table tbody tr:last-child td { border-bottom: none; font-weight: 700; background: #F8FAFC; }
+.delta-up { color: var(--green); font-weight: 700; }
+.delta-dn { color: var(--red); }
+
+/* Module Progress */
+.module-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.module-card { background: var(--card); border-radius: 10px; padding: 18px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.module-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.module-name { font-weight: 700; font-size: 0.92rem; }
+.module-pct { font-size: 1.5rem; font-weight: 800; }
+.module-bar-bg { background: #F1F5F9; border-radius: 6px; height: 8px; margin-bottom: 8px; overflow: hidden; }
+.module-bar-fill { height: 100%; border-radius: 6px; }
+.module-detail { font-size: 0.75rem; color: var(--text-muted); }
+
+/* Insight cards */
+.insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.insight-card { border-radius: 12px; padding: 22px; }
+.insight-card.green { background: #F0FDF4; border: 1px solid #86EFAC; }
+.insight-card.amber { background: #FFFBEB; border: 1px solid #FDE68A; }
+.insight-card.red { background: #FFF0F2; border: 1px solid #FECACA; }
+.insight-card.blue { background: #EFF6FF; border: 1px solid #BFDBFE; }
+.insight-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+.insight-card li { padding: 3px 0; font-size: 0.85rem; list-style: none; }
+.insight-card li::before { content: '• '; color: inherit; opacity: 0.6; }
+
+footer { text-align: center; padding: 36px 0; color: var(--text-muted); font-size: 0.82rem; border-top: 1px solid var(--border); background: var(--card); }
+footer a { color: var(--blue); text-decoration: none; }
+
+@media (max-width: 1100px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+  .health-grid { grid-template-columns: 1fr 1fr; }
+  .module-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+  .health-grid, .blockers-grid, .insight-grid, .module-grid { grid-template-columns: 1fr; }
+  header h1 { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Status Report · April 2026</div>
+  <h1>laravel.diagnostic.ly</h1>
+  <p>Project Completion Status — EPICs, Issues & Outstanding Work</p>
+  <p class="header-sub">Sources: Deep Audit (Mar 14) · Productivity Audit (Mar 13 / Apr 2) · GitHub Issues · PR History</p>
+</header>
+
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="number">100</div>
+    <div class="label">Total EPICs</div>
+  </div>
+  <div class="kpi green">
+    <div class="number">33</div>
+    <div class="label">EPICs Closed</div>
+  </div>
+  <div class="kpi amber">
+    <div class="number">67</div>
+    <div class="label">EPICs Open</div>
+  </div>
+  <div class="kpi">
+    <div class="number">443</div>
+    <div class="label">PHPUnit Tests</div>
+  </div>
+  <div class="kpi purple">
+    <div class="number">62%</div>
+    <div class="label">Overall Health</div>
+  </div>
+  <div class="kpi red">
+    <div class="number">7</div>
+    <div class="label">Critical Blockers</div>
+  </div>
+</div>
+
+<!-- ── HEALTH SCORES ── -->
+<section style="padding-top: 72px;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">Overall Health Scores</div>
+      <div class="section-sub">Based on Deep Audit (Mar 14) + current GitHub state</div>
+    </div>
+    <div class="health-grid">
+      <div class="health-card">
+        <h4>Feature Completeness (PHP Parity)</h4>
+        <div class="health-score score-mid">
+          <div class="score-num">55</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:55%"></div></div>
+        </div>
+        <div class="score-note">Core flows done. P0/P1 gaps remain: auto-login tokens, telemedicine, checkout.</div>
+      </div>
+      <div class="health-card">
+        <h4>Architecture Compliance</h4>
+        <div class="health-score score-mid">
+          <div class="score-num">60</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:60%"></div></div>
+        </div>
+        <div class="score-note">36 controllers still bypass Manager layer. 5 God Classes &gt;1,000 lines.</div>
+      </div>
+      <div class="health-card">
+        <h4>Test Coverage</h4>
+        <div class="health-score score-mid">
+          <div class="score-num">45</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:45%"></div></div>
+        </div>
+        <div class="score-note">443 PHPUnit tests (40%+ enforced). Nightly regression pipeline not yet running.</div>
+      </div>
+      <div class="health-card">
+        <h4>Security Posture</h4>
+        <div class="health-score score-high">
+          <div class="score-num">75</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:75%"></div></div>
+        </div>
+        <div class="score-note">10/10 audit findings fixed. XSS &amp; SFTP fixed. OTP security partial.</div>
+      </div>
+      <div class="health-card">
+        <h4>Governance / CI-CD</h4>
+        <div class="health-score score-high">
+          <div class="score-num">90</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:90%"></div></div>
+        </div>
+        <div class="score-note">GitHub Actions solid. 93.75% governance complete. Branch protection rules pending.</div>
+      </div>
+      <div class="health-card">
+        <h4>Infrastructure</h4>
+        <div class="health-score score-high">
+          <div class="score-num">85</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:85%"></div></div>
+        </div>
+        <div class="score-note">Staging + UAT live. develop/main 706-commit drift is unresolved.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODULE STATUS ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">Module Completion</div>
+      <div class="section-sub">Implementation depth per Laravel module</div>
+    </div>
+    <div class="module-grid">
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Admin</div>
+          <div class="module-pct" style="color:#0284C7">80%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:80%;background:#0284C7"></div></div>
+        <div class="module-detail">ADM4–ADM23 all closed Apr 1. SSO, Events, Language Mgmt, Custom Fields complete. Telemedicine UI pending.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Provider</div>
+          <div class="module-pct" style="color:#0284C7">75%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:75%;background:#0284C7"></div></div>
+        <div class="module-detail">All 23 PR gaps closed (PR #1729). Bulk orders, permissions, case comms done. Checkout flow incomplete.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Observer</div>
+          <div class="module-pct" style="color:var(--amber)">65%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:65%;background:var(--amber)"></div></div>
+        <div class="module-detail">OBS1/2/4/5/7/10/12/13 implemented. Verification flow fixed. Video/live chat not started.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Patient</div>
+          <div class="module-pct" style="color:var(--amber)">55%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:55%;background:var(--amber)"></div></div>
+        <div class="module-detail">Module 3 gaps (P2/P9–P11/P17) closed. Registration & intake forms complete. Dashboard notification hub not built.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Document</div>
+          <div class="module-pct" style="color:var(--green)">70%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:70%;background:var(--green)"></div></div>
+        <div class="module-detail">Architecture epic closed. Role-based permission matrix not complete.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">CaseManager</div>
+          <div class="module-pct" style="color:var(--amber)">40%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:40%;background:var(--amber)"></div></div>
+        <div class="module-detail">Architecture epic closed. Resolution types added. Full case workflow, cron triggers, intake forms partial.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">OrderApproval</div>
+          <div class="module-pct" style="color:var(--amber)">35%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:35%;background:var(--amber)"></div></div>
+        <div class="module-detail">Conditions + recipient routing (ADM6) closed. Full order approval workflow partial.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">TestResults</div>
+          <div class="module-pct" style="color:var(--red)">15%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:15%;background:var(--red)"></div></div>
+        <div class="module-detail">Models exist. No SpotDX/MLB integration. CPT template management not built. Depends on lab APIs.</div>
+      </div>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-name">Webhooks/Integrations</div>
+          <div class="module-pct" style="color:var(--amber)">50%</div>
+        </div>
+        <div class="module-bar-bg"><div class="module-bar-fill" style="width:50%;background:var(--amber)"></div></div>
+        <div class="module-detail">Module 8 webhooks PR #1745 merged. GoHigh.AI, ShipEngine, Shopify not started.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EPICS: COMPLETE ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">EPIC Status — All Groups</div>
+      <div class="section-sub">100 total epics across all feature areas. Sorted by group and completion.</div>
+    </div>
+
+    <!-- GROUP A: Complete -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group A — Closed / Complete</h3>
+        <span class="group-badge gb-complete">9 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1678</td>
+            <td><div class="issue-title">Module 2 — Patient Registration &amp; Intake Forms Gap Closure</div><div class="issue-sub">R1–R18, caregiver registration, webhook pre-population, form interruptions</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — closed Mar 30</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1573</td>
+            <td><div class="issue-title">Project Completion — Full Gap Analysis &amp; Roadmap</div><div class="issue-sub">Gap analysis, 22 feature areas mapped, planning deliverables</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — planning epic completed Mar 31</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1567</td>
+            <td><div class="issue-title">Complete Document Module Architecture</div><div class="issue-sub">Manager/Service/Repository layers, contracts, DTOs</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — closed Mar 27</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1566</td>
+            <td><div class="issue-title">Complete CaseManager Module Architecture</div><div class="issue-sub">Full architectural layers added, RepositoryException, DTOs</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — closed Mar 27</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1493</td>
+            <td><div class="issue-title">Observer Missing Features — Laravel Implementation</div><div class="issue-sub">OBS1/2/4/5/7/10/12/13 — email notifications, live support, interruptions, notifications</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1477</td>
+            <td><div class="issue-title">Integrate 5 stranded Phase 14 products into main</div><div class="issue-sub">Finance, API Docs, Scheduling, RFP Builder, Competitive Dashboard</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — all 5 products integrated</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1458</td>
+            <td><div class="issue-title">Role-Based Custom Fields — Super Admin User Module</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1325</td>
+            <td><div class="issue-title">Super Admin Dashboard — Account Management &amp; Reporting Platform</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1239</td>
+            <td><div class="issue-title">Manager Portal — Account-Level Management Platform</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-100"><span class="pct-num">100%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:100%"></span></span></div></td>
+            <td><span class="state state-closed">Closed</span></td>
+            <td class="outstanding">None — security findings from PR #1251 resolved separately</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP B: Active High -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group B — Active / High Completion (70–95%)</h3>
+        <span class="group-badge gb-active">5 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1523</td>
+            <td><div class="issue-title">Merge 14 PRs — Dependabot Updates &amp; Feature Integration (Mar 2026)</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-high"><span class="pct-num">85%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:85%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">Blocked</span> 5 major Dependabot PRs rejected: Stripe v15→v20, Inertia v2→v3, intervention/image v3→v4, lucide-vue, google/cloud-translate. Need manual migration.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1186</td>
+            <td><div class="issue-title">Fix CI for release/v1.0 (main → develop merge)</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-high"><span class="pct-num">85%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:85%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">Critical</span> develop is <strong>706 commits behind main</strong>. Anyone branching from develop gets stale code. Must resync or retire develop branch.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1170</td>
+            <td><div class="issue-title">Scope Requirements Documentation — 176 docs, GitHub audit, AI pipeline</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-high"><span class="pct-num">90%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:90%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag">Pending</span> Jenkins decommission. <span class="tag">Pending</span> Branch protection rules in GitHub UI (needs human to set).</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1538</td>
+            <td><div class="issue-title">EPIC: PHP → Laravel Migration Gap Closure &amp; Security Fixes</div><div class="issue-sub">Parent epic for P0/P1/P2 sub-epics. Core flows + 23 provider gaps + all admin ADM gaps now closed.</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-high"><span class="pct-num">70%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:70%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">P0 gaps</span> Auto-login tokens (TODO in code), SSO SAML2 per-account, assignment routing. <span class="tag red">P1</span> Telemedicine, Checkout, Observer video/chat.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1444</td>
+            <td><div class="issue-title">Deep Codebase Audit Remediation — Architecture, Security, Compliance &amp; Test Coverage</div><div class="issue-sub">507 violations found (Mar 14). Migration bug, XSS, SFTP encryption all fixed.</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">45%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:45%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">36 controllers</span> bypass Manager layer. <span class="tag red">5 God Classes</span> &gt;1,000 lines. <span class="tag">113</span> <code>Exception</code> catches (should be <code>\Throwable</code>). Architecture violations ongoing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP C: Active Mid -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group C — Active / Mid Completion (40–70%)</h3>
+        <span class="group-badge gb-partial">7 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1252</td>
+            <td><div class="issue-title">Intake Form System — Form Builder, Public Forms, Submissions &amp; Management</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">65%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:65%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Section-level validation, advanced conditional logic, submission analytics not complete.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1152</td>
+            <td><div class="issue-title">Catalog Import/Export Tool — Batch Upload/Download for Products &amp; Bundles</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">60%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:60%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">PR #1745 (webhooks) merged. Export edge cases and activity log completeness unverified.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1175</td>
+            <td><div class="issue-title">Automated E2E Testing Infrastructure on Staging</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">55%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:55%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Staging deployed. Overnight regression scheduler not active. Video recording pipeline incomplete.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1375</td>
+            <td><div class="issue-title">Comprehensive Test Suite &amp; Daily Overnight Regression Tests</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">45%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:45%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">Blocked</span> #1443 — test suites on unmerged branches not recovered. Playwright covers ~30% of routes. Nightly regression not running.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1094</td>
+            <td><div class="issue-title">Email Queue System — Legacy PHP → Laravel Queue Migration</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">50%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:50%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Legacy cron-based email partially replaced. Full queue migration not verified complete.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1126</td>
+            <td><div class="issue-title">Events System Enhancements — Attendant Approval Config, Participant Limits</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">35%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:35%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Events CRUD merged (#1594). Attendant approval config, participant limits, and self-registration links missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1144</td>
+            <td><div class="issue-title">Ecommerce Bundle Images, Descriptions &amp; Education Flow Button Styling</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-mid"><span class="pct-num">30%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:30%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Education flow button styling partial. Bundle image management and rich-text descriptions not complete.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP D: P0/P1/P2 Sub-Epics -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group D — PHP→Laravel Migration Sub-EPICs (under #1538)</h3>
+        <span class="group-badge gb-partial">3 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">Priority</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1540</td>
+            <td><div class="issue-title">P0: Auto-Login Tokens, SSO, Assignments — Critical Feature Gaps</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">15%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:15%"></span></span></div></td>
+            <td><span class="state state-blocked">CRITICAL</span></td>
+            <td class="outstanding"><span class="tag red">Blocking prod</span> Auto-login token system is a TODO in code. SSO SAML2/OAuth2 per-account wiring. Patient/provider assignment edge cases.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1541</td>
+            <td><div class="issue-title">P1: Telemedicine, Case Management, Observer Chat/Video, Crons, Checkout</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">30%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:30%"></span></span></div></td>
+            <td><span class="state" style="background:#FEF3C7;color:#92400E">HIGH</span></td>
+            <td class="outstanding">Telemedicine controller/network: not started. Checkout flow: incomplete. Observer video/chat: not implemented. CR1–CR11 crons done (#1695).</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1542</td>
+            <td><div class="issue-title">P2: Events, Webhooks, Insurance, Fax, Routes Cleanup &amp; Code Quality</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">35%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:35%"></span></span></div></td>
+            <td><span class="state" style="background:#FEF3C7;color:#92400E">MED</span></td>
+            <td class="outstanding">Kit registration flow missing. Insurance billing UI not started. Fax integration not started. Route cleanup pending.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP E: Backlog Feature EPICs -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group E — Feature EPICs / Backlog (0–30%)</h3>
+        <span class="group-badge gb-backlog">20 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1565</td>
+            <td><div class="issue-title">Unified Ecommerce &amp; Ordering</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">25%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:25%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Bulk ordering partial. Shopify plugin not started. B2B self-service not started. Checkout flow incomplete.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1135</td>
+            <td><div class="issue-title">Universal Login &amp; Role/Account Chooser</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">20%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:20%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Google SSO partial. Role chooser not fully implemented. White-label login not started.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1114</td>
+            <td><div class="issue-title">SSO Integration — SAML2/OAuth2 Account-Level Config &amp; IP-Restricted Login</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">25%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:25%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">ADM4/5 merged (PR #1715). Full SAML2 config management UI and IP-range routing incomplete.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1149</td>
+            <td><div class="issue-title">Patient Portal Dashboard — Notification Hub &amp; Order Management</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">20%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:20%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Notification hub not built. Order management partial. Clickable metric tiles not implemented.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1136</td>
+            <td><div class="issue-title">Test Resulting &amp; Result Reporting — Instant/Lab Results, CPT Templates</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">15%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:15%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">SpotDX/MLB integration not complete. CPT templates partial. Multi-test result capture flows not started.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1131</td>
+            <td><div class="issue-title">CPT Codes &amp; ICD-10 Integration — Product Billing, Payor Management</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Prerequisite for insurance billing workflows.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1118</td>
+            <td><div class="issue-title">Document Manager Default Permissions — Role-Based Access Matrix</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">15%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:15%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Document module exists. Granular per-role permission matrix (view/share/download/delete per folder) not built.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1115</td>
+            <td><div class="issue-title">Shipment Tracking &amp; Delayed Shipment Handling — ShipEngine Integration</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No ShipEngine integration. Reshipment workflow rules not built. SLA configuration missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1113</td>
+            <td><div class="issue-title">SuperAdmin Testing Tool — Configurable Test Library &amp; Execution</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">0%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:0%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation started.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1112</td>
+            <td><div class="issue-title">Reshipment Rules for Inconclusive/Insufficient Quantity Results</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Global settings tab exists. Account-level fee configuration and bundle exemption modal not built.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1111</td>
+            <td><div class="issue-title">MyLab Box (MLB) API Integration — Bidirectional Order Exchange</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation started. Two-way order exchange, shipment webhooks, result ingest all missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1109</td>
+            <td><div class="issue-title">SpotDX Lab Integration — Two-Way API, Status Mapping</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Status mapping CRUD, webhook/polling API architecture not built.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1108</td>
+            <td><div class="issue-title">Prescription (Rx) Management — Provider Interface &amp; Fulfilment API</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation started.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1142</td>
+            <td><div class="issue-title">Phlebotomy Network Configuration — Partner Setup, Patient Scheduling</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Partner messaging, scheduling links, kit logistics all missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1140</td>
+            <td><div class="issue-title">B2B Self-Service Portal — Account Creation, Distributor Ordering</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Self-registration, client management, multi-mode ordering all missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1139</td>
+            <td><div class="issue-title">Municipal Services / Harm Reduction — Kiosk, Quota Management</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Defent customer (#1158) — kiosk dispensation, address validation, quota management all missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1123</td>
+            <td><div class="issue-title">Channel Partner Module — Partner Company Management</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation started.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1120</td>
+            <td><div class="issue-title">Shopify Plugin Integration — Store Connection, Product Sync</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">0%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:0%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. No scope docs written yet.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1129</td>
+            <td><div class="issue-title">Program Manager Module — Custom Program Workflows, Eligibility</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No implementation. Eligibility criteria, vending machine distribution, program workflows all missing.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1153</td>
+            <td><div class="issue-title">Roadmap Items — CPT Billing, Revenue Share, Consumer Payments, SSO/LDAP</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">CPT/ICD-10 partial. Consumer payments, revenue share, LDAP not started.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP F: Strategic / Planning -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group F — Strategic &amp; Planning EPICs</h3>
+        <span class="group-badge gb-backlog">6 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1627</td>
+            <td><div class="issue-title">Architecture: Split PHI Database from Settings DB + Isolated PHI per Client</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">5%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:5%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">Awaiting David</span> David requested this Mar 27. Two-phase DB migration strategy needs sign-off before implementation begins.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1574</td>
+            <td><div class="issue-title">PLAN B: Laravel Migration Completion &amp; Production Switchover — 12 weeks</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding"><span class="tag red">Awaiting David</span> Strategic plan only. No implementation. Requires go/no-go decision and blue-green deployment strategy approval.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1481</td>
+            <td><div class="issue-title">Backlog Completion Plan — 500+ issues, 6 phases, 20 weeks</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Plan written but needs re-baselining against current state. Phase 1 only partially executed.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1443</td>
+            <td><div class="issue-title">Triage &amp; Recover Lost Test Suites from Unmerged Branches</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-low"><span class="pct-num">30%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:30%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">14 auto-implement branches (105 commits) unmerged. 40 test files on main; many more on stale branches awaiting triage.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1174</td>
+            <td><div class="issue-title">David Alignment — Scope Prioritization, DB Schema Policy &amp; Staffing Review</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">20%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:20%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">PHI DB split (#1627) raised, no signed-off decisions documented. Staffing review outcome unknown.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1439</td>
+            <td><div class="issue-title">API Integration Dashboard — Laravel parity with PHP app (#3123)</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">10%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:10%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">Scope documented. No Laravel implementation started.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GROUP G: New Products -->
+    <div class="epic-group">
+      <div class="group-label">
+        <h3>Group G — New Products (Not Started)</h3>
+        <span class="group-badge gb-new">3 EPICs</span>
+      </div>
+      <table class="epic-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Issue</th>
+            <th>Title</th>
+            <th class="center" style="width:160px">Completion</th>
+            <th style="width:100px">State</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="issue-num">#1476</td>
+            <td><div class="issue-title">Product 05: RFP Matching Engine — Lab Matchmaker for Prospect-to-Lab Pairing</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">0%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:0%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No docs, no spec, no implementation. Product definition required before work can begin.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1475</td>
+            <td><div class="issue-title">Product 04: Strategic Planning Tools — Market Sizing &amp; Pricing Intelligence</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">0%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:0%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No docs, no spec, no implementation.</td>
+          </tr>
+          <tr>
+            <td class="issue-num">#1474</td>
+            <td><div class="issue-title">Product 03: Lab Aggregation Portal — allathomelabnow.com / alllabs.com</div></td>
+            <td class="pct-cell"><div class="pct-wrap pct-zero"><span class="pct-num">0%</span><span class="pct-bar-bg"><span class="pct-bar-fill" style="width:0%"></span></span></div></td>
+            <td><span class="state state-open">Open</span></td>
+            <td class="outstanding">No docs, no spec, no implementation. Multi-site domain strategy needs definition.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CRITICAL BLOCKERS ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">Critical Blockers</div>
+      <div class="section-sub">Issues that prevent production readiness or block other work</div>
+    </div>
+    <div class="blockers-grid">
+      <div class="blocker-card">
+        <div class="blocker-num">BLOCKER 1 · INFRASTRUCTURE</div>
+        <div class="blocker-title">develop branch is 706 commits behind main</div>
+        <div class="blocker-detail">PR #1428 merged develop → main but never synced back. Anyone branching from develop is missing 706 commits of work. Must resync or retire develop as integration branch.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-num">BLOCKER 2 · FEATURE GAP</div>
+        <div class="blocker-title">P0: Auto-login token system is a TODO in code</div>
+        <div class="blocker-detail">Auto-login tokens (deep links for email/SMS) are a TODO comment in the codebase. This blocks end-to-end patient onboarding flows and any email/SMS-driven workflows.</div>
+      </div>
+      <div class="blocker-card">
+        <div class="blocker-num">BLOCKER 3 · ARCHITECTURE</div>
+        <div class="blocker-title">36 controllers bypass Manager layer</div>
+        <div class="blocker-detail">Audit (Mar 14) found 36 controllers injecting Repositories or Services directly. Violates mandatory Controller → Manager → Service → Repository pattern. Blocks architecture compliance sign-off.</div>
+      </div>
+      <div class="blocker-card amber">
+        <div class="blocker-num">BLOCKER 4 · TEST INFRASTRUCTURE</div>
+        <div class="blocker-title">Nightly regression pipeline not running</div>
+        <div class="blocker-detail">443 PHPUnit tests written but overnight regression scheduler on staging not active. Video recording pipeline incomplete. E2E coverage ~30% of routes.</div>
+      </div>
+      <div class="blocker-card amber">
+        <div class="blocker-num">BLOCKER 5 · DEPENDENCIES</div>
+        <div class="blocker-title">5 major Dependabot upgrades rejected — need manual migration</div>
+        <div class="blocker-detail">Stripe v15→v20, Inertia v2→v3, intervention/image v3→v4, lucide-vue v0.577→v1.0, google/cloud-translate v1→v2. Breaking changes require manual migration work.</div>
+      </div>
+      <div class="blocker-card amber">
+        <div class="blocker-num">BLOCKER 6 · GOVERNANCE</div>
+        <div class="blocker-title">Branch protection rules not set in GitHub UI</div>
+        <div class="blocker-detail">Requires human admin action in GitHub Settings. Currently only 12% of merged PRs received human code review (Mar 10–16 audit). Code review coverage must improve before production cutover.</div>
+      </div>
+      <div class="blocker-card blue">
+        <div class="blocker-num">BLOCKER 7 · DECISION REQUIRED</div>
+        <div class="blocker-title">PHI DB split &amp; production switchover awaiting David sign-off</div>
+        <div class="blocker-detail">Epic #1627 (PHI DB split) and #1574 (PLAN B production switchover) both need David's go/no-go decision before implementation can begin. 408+ open issues depend on strategic direction.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VELOCITY ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">Team Velocity — Last 6 Weeks</div>
+      <div class="section-sub">Unique commits, PRs merged, and issue throughput</div>
+    </div>
+    <table class="velocity-table">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Commits</th>
+          <th>PRs Merged</th>
+          <th>Issues Created</th>
+          <th>Issues Closed</th>
+          <th>vs Prior</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Feb 17–23 (Baseline)</td>
+          <td>66</td>
+          <td>4</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Feb 24–Mar 2</td>
+          <td>244</td>
+          <td>15</td>
+          <td>0</td>
+          <td>0</td>
+          <td class="delta-up">+270%</td>
+        </tr>
+        <tr>
+          <td>Mar 3–9</td>
+          <td>267</td>
+          <td>27</td>
+          <td>70</td>
+          <td>189</td>
+          <td class="delta-up">+9%</td>
+        </tr>
+        <tr>
+          <td>Mar 10–16</td>
+          <td>349</td>
+          <td>47</td>
+          <td>130</td>
+          <td>11</td>
+          <td class="delta-up">+31%</td>
+        </tr>
+        <tr>
+          <td>Mar 17–Apr 2 (last 2.5 wks)</td>
+          <td>600+</td>
+          <td>35+</td>
+          <td>~80</td>
+          <td>~150</td>
+          <td class="delta-up">Record</td>
+        </tr>
+        <tr>
+          <td><strong>6-week total</strong></td>
+          <td><strong>1,500+</strong></td>
+          <td><strong>128+</strong></td>
+          <td><strong>280+</strong></td>
+          <td><strong>350+</strong></td>
+          <td><strong>5.3× baseline</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── INSIGHTS ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">Key Insights</div>
+      <div class="section-sub">Patterns from the last 2–3 weeks of audit data</div>
+    </div>
+    <div class="insight-grid">
+      <div class="insight-card green">
+        <h3>Wins</h3>
+        <ul>
+          <li>5.3× velocity increase — 66→349+ commits/week</li>
+          <li>All 23 Provider Portal gaps closed (PR #1729)</li>
+          <li>All Admin ADM4–ADM23 gaps closed (Apr 1)</li>
+          <li>Module 2, 3, 6, 7, 8 gap closures merged</li>
+          <li>443 PHPUnit tests — 40%+ coverage enforced</li>
+          <li>10/10 security audit findings fixed</li>
+          <li>93.75% governance complete (30/32 items)</li>
+          <li>Staging + UAT environments live</li>
+          <li>Migration bug (users table drop) fixed</li>
+          <li>XSS + SFTP encryption vulnerabilities patched</li>
+        </ul>
+      </div>
+      <div class="insight-card red">
+        <h3>Risks</h3>
+        <ul>
+          <li>develop branch 706 commits behind main — stale for all branchers</li>
+          <li>36 controllers bypass mandatory Manager layer</li>
+          <li>Auto-login token system is a TODO in code (P0 gap)</li>
+          <li>Code review coverage only 12% (Mar 10–16)</li>
+          <li>5 God Classes &gt;1,000 lines not refactored</li>
+          <li>Major Dependabot version bumps unresolved</li>
+          <li>PR #1753 (my-cases QA feedback) still open</li>
+        </ul>
+      </div>
+      <div class="insight-card amber">
+        <h3>Watch Items</h3>
+        <ul>
+          <li>Telemedicine — 13+ PHP source files, no Laravel equivalent</li>
+          <li>TestResults module at 15% — blocked by lab API integrations</li>
+          <li>PHI DB split decision pending David (raised Mar 27)</li>
+          <li>14 auto-implement branches with 105 commits not merged/triaged</li>
+          <li>Nightly regression tests not yet scheduled on staging</li>
+          <li>SSH jump server connection timeouts (issue #1534 regressed)</li>
+        </ul>
+      </div>
+      <div class="insight-card blue">
+        <h3>Next Priorities</h3>
+        <ul>
+          <li>#1540 — P0: Implement auto-login token system</li>
+          <li>Resync develop branch or retire it in favour of main</li>
+          <li>#1444 — Fix 36 controller architecture violations</li>
+          <li>Enable branch protection rules in GitHub UI</li>
+          <li>#1443 — Triage &amp; recover test suites from unmerged branches</li>
+          <li>Schedule nightly regression run on staging</li>
+          <li>Manual migration: Stripe v20, Inertia v3</li>
+          <li>Get David sign-off on #1574 (production switchover plan)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Generated from GitHub Issues, PR history &amp; audit documents &mdash; <strong>laravel.diagnostic.ly</strong> &mdash; April 2, 2026<br>
+    Sources: Deep Audit (Mar 14) · Productivity Audit (Mar 13, Apr 2) · GitHub Issues &amp; PR History<br>
+    <a href="https://github.com/wbtw-repositories/laravel.diagnostic.ly">github.com/wbtw-repositories/laravel.diagnostic.ly</a>
+  </div>
+</footer>
+
+</body>
+</html>
